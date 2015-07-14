@@ -119,7 +119,7 @@ import android.widget.Toast;
 	    			
 	    			Log.d("Number_of_Hit", Integer.toString(BouncingBallActivity.number_of_hit_per_level));
 	    			if(BouncingBallActivity.number_of_hit_per_level == BouncingBallActivity.MAX_NUMBER_OF_HIT && BouncingBallActivity.level < BouncingBallActivity.MAX_LEVEL){
-	    				BouncingBallActivity.getActivity().callBackHandler.post(new Runnable(){
+	    				/*BouncingBallActivity.getActivity().callBackHandler.post(new Runnable(){
     						@Override
     						public void run() {
     							// TODO Auto-generated method stub
@@ -128,7 +128,8 @@ import android.widget.Toast;
     							//return;
     						}
     	    				
-    	    			});
+    	    			});*/
+	    				BouncingBallActivity.getActivity().increaseLevel();
 	    			}
 	    				
 	    				if(BouncingBallActivity.level == BouncingBallActivity.MAX_LEVEL && BouncingBallActivity.number_of_hit_per_level == BouncingBallActivity.MAX_NUMBER_OF_HIT){
