@@ -1,6 +1,7 @@
 package com.somitsolutions.training.android.bouncingball;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -68,9 +69,16 @@ public class BouncingBallActivity extends Activity implements OnClickListener{
         
         extremeRight = width-10;
         
-   
-        slider = new Slider(0, 200, 358, true, 6);
-        ball = new Ball((extremeRight - extremeLeft)/2, 30, 15, 4,4);
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+        	
+        	slider = new Slider(0, 200, 220, true, 9);
+            ball = new Ball((extremeRight - extremeLeft)/2, 5, 15, 4,4);
+        }
+        
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+        	slider = new Slider(0, 200, 358, true, 6);
+            ball = new Ball((extremeRight - extremeLeft)/2, 30, 15, 4,4);
+        }
         
         bouncingBallActivity = this;
        
@@ -111,8 +119,17 @@ public class BouncingBallActivity extends Activity implements OnClickListener{
 				slider = null;
 			}
 			
-			slider = new Slider(0, 200, 358, true, 6);
-	        ball = new Ball((extremeRight - extremeLeft)/2, 30, 15, 4,4);
+			 if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+		        	
+				 slider = new Slider(0, 200, 220, true, 9);
+		         ball = new Ball((extremeRight - extremeLeft)/2, 5, 15, 4,4);
+		        }
+		        
+		        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+		        	slider = new Slider(0, 200, 358, true, 6);
+			        ball = new Ball((extremeRight - extremeLeft)/2, 30, 15, 4,4);
+		        }
+			
 			
 	        p.surfaceCreated(p.getHolder());
 	        
@@ -145,9 +162,16 @@ public class BouncingBallActivity extends Activity implements OnClickListener{
 			slider = null;
 		}
 		
-		ball = new Ball((extremeRight - extremeLeft)/2, 30, 15, (float)(ballDx + .5), (float)(ballDy + .5));
-		slider = new Slider((extremeRight - extremeLeft)/2, sliderWidth - 25, 358, true, sliderdX + 2);
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+        	
+			 slider = new Slider(0, sliderWidth - 25, 220, true, sliderdX + 2);
+	         ball = new Ball((extremeRight - extremeLeft)/2, 5, 15, (float)(ballDx + .5), (float)(ballDy + .5));
+	        }
 		
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+			ball = new Ball((extremeRight - extremeLeft)/2, 30, 15, (float)(ballDx + .5), (float)(ballDy + .5));
+			slider = new Slider((extremeRight - extremeLeft)/2, sliderWidth - 25, 358, true, sliderdX + 2);
+		}
 		p.surfaceCreated(p.getHolder());
 		
 	}
