@@ -33,8 +33,6 @@ import android.view.SurfaceHolder;
                     synchronized (_surfaceHolder) {
                         _panel.onDraw(c);
                         Thread.sleep(50);
-                       //c.drawColor(Color.BLACK);
-                       // _panel.postInvalidateDelayed(10);
                     }
                 }
                  catch(InterruptedException e){

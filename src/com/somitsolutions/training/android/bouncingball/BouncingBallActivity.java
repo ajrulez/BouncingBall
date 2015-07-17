@@ -9,19 +9,22 @@ import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.View.OnClickListener;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 public class BouncingBallActivity extends Activity implements OnClickListener{
 	private static BouncingBallActivity bouncingBallActivity;
-	//static int points = 0;
+	boolean isReplayClicked = false;
 	static final int MAX_LEVEL = 4;
 	static final int MAX_NUMBER_OF_HIT = 5;
 	static Slider slider;
 	static Ball ball;
-	//static boolean leftToRightMovement = true;
-	
+
+	int surfaceHeight;
 	static float ballX = 0;
 	static float ballY = 290;
 	static float extremeRight;
@@ -40,17 +43,36 @@ public class BouncingBallActivity extends Activity implements OnClickListener{
 	
 	Handler callBackHandler;
 	
-	//SurfaceHolder surfaceHolder;
+	RelativeLayout rootLayout;
 	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        //p = new Panel(this);
+      
         setContentView(R.layout.activity_main);
         p = (Panel)findViewById(R.id.surfaceView1);
+        rootLayout = (RelativeLayout) findViewById(R.id.rootView);
         
+       
+        ViewTreeObserver vtoSurface = p.getViewTreeObserver();
+        vtoSurface.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+			
+			@Override
+			public void onGlobalLayout() {
+				//p._thread.setRunning(false);
+				surfaceHeight = p.getHeight();
+		        bottom_Of_Surface = surfaceHeight;
+		        //We will have to delay the creation of the Ball & the Slider
+		        //till the surface is completely loaded and displayed.
+		        CreateSliderAndBall();
+		       
+		       
+		        
+			}
+		});
+        
+       
         leftButton = (Button) findViewById(R.id.button1);
         rightButton = (Button) findViewById(R.id.button2);
         replayButton = (Button) findViewById(R.id.button3);
@@ -64,21 +86,10 @@ public class BouncingBallActivity extends Activity implements OnClickListener{
         //find out the width & height of the screen
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int height = displaymetrics.heightPixels;
+        
         int width = displaymetrics.widthPixels;
         
         extremeRight = width-10;
-        
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-        	
-        	slider = new Slider(0, 200, 220, true, 9);
-            ball = new Ball((extremeRight - extremeLeft)/2, 5, 15, 4,4);
-        }
-        
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-        	slider = new Slider(0, 200, 358, true, 6);
-            ball = new Ball((extremeRight - extremeLeft)/2, 30, 15, 4,4);
-        }
         
         bouncingBallActivity = this;
        
@@ -90,6 +101,7 @@ public class BouncingBallActivity extends Activity implements OnClickListener{
 	
         callBackHandler = new Handler();
     }
+    
     
     public static BouncingBallActivity getActivity(){
     	return bouncingBallActivity;
@@ -105,38 +117,16 @@ public class BouncingBallActivity extends Activity implements OnClickListener{
 		}
 		
 		if(v.equals(rightButton)){
-			//leftToRightMovement = true;
+			
 			slider.setLeftToRightMovement(true);
 			slider.setDx(Math.abs(slider.getDx()));
 		}
 		
 		if(v.equals(replayButton)){
-			p._thread.setRunning(false);
-			if(ball != null){
-				ball = null;
-			}
-			if(slider != null){
-				slider = null;
-			}
-			
-			 if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-		        	
-				 slider = new Slider(0, 200, 220, true, 9);
-		         ball = new Ball((extremeRight - extremeLeft)/2, 5, 15, 4,4);
-		        }
-		        
-		        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-		        	slider = new Slider(0, 200, 358, true, 6);
-			        ball = new Ball((extremeRight - extremeLeft)/2, 30, 15, 4,4);
-		        }
-			
-			
-	        p.surfaceCreated(p.getHolder());
-	        
-			number_of_hit_per_level = 0;
-			total_number_of_hit = 0;
-			level = 1;
+			isReplayClicked = true;
+			Replay();
 		}
+			
 	}
 	
 	
@@ -162,18 +152,65 @@ public class BouncingBallActivity extends Activity implements OnClickListener{
 			slider = null;
 		}
 		
-		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-        	
-			 slider = new Slider(0, sliderWidth - 25, 220, true, sliderdX + 2);
-	         ball = new Ball((extremeRight - extremeLeft)/2, 5, 15, (float)(ballDx + .5), (float)(ballDy + .5));
-	        }
+		CreateSliderAndBall();
 		
-		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-			ball = new Ball((extremeRight - extremeLeft)/2, 30, 15, (float)(ballDx + .5), (float)(ballDy + .5));
-			slider = new Slider((extremeRight - extremeLeft)/2, sliderWidth - 25, 358, true, sliderdX + 2);
-		}
+		slider.setDx(sliderdX + 2);
+		slider.setWidth(sliderWidth - 25);
+		ball.setdX((float)(ballDx + .5));
+		ball.setdY((float)(ballDy + .5));
+			
+	   
 		p.surfaceCreated(p.getHolder());
 		
+	}
+	
+	private void Replay(){
+		
+		p._thread.setRunning(false);
+		if(ball != null){
+			ball = null;
+		}
+		if(slider != null){
+			slider = null;
+		}
+		
+		CreateSliderAndBall();
+        p.surfaceCreated(p.getHolder());
+        
+		number_of_hit_per_level = 0;
+		total_number_of_hit = 0;
+		level = 1;
+	}
+	
+	private void CreateSliderAndBall(){
+		
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+        	
+			if(rootLayout.getTag().equals("big_screen")){
+				slider = new Slider(0, 200, bottom_Of_Surface - 20 , true, 15);
+	            ball = new Ball((extremeRight - extremeLeft)/2, 5, 15, 6,6);
+			}
+			
+			if(rootLayout.getTag().equals("small_screen")){
+				slider = new Slider(0, 200, bottom_Of_Surface - 20 , true, 9);
+	            ball = new Ball((extremeRight - extremeLeft)/2, 5, 15, 4,4);
+        	}
+        	
+        }
+        
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+        	if(rootLayout.getTag().equals("big_screen")){
+        		slider = new Slider(0, 200, bottom_Of_Surface - 20, true, 10);
+                ball = new Ball((extremeRight - extremeLeft)/2, 30, 15, 6,6);
+        	}
+        	
+        	if(rootLayout.getTag().equals("small_screen")){
+        		slider = new Slider(0, 200, bottom_Of_Surface - 20, true, 6);
+                ball = new Ball((extremeRight - extremeLeft)/2, 30, 15, 4,4);
+        	}
+        	
+        }
+       
 	}
 }
    

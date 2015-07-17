@@ -41,9 +41,19 @@ import android.widget.Toast;
     		
     	}
 
-    	public void surfaceCreated(SurfaceHolder holder) {
+		@SuppressWarnings("static-access")
+		public void surfaceCreated(SurfaceHolder holder) {
     		// TODO Auto-generated method stub
     		 _thread = new GameThread(getHolder(), this);
+    		 if(BouncingBallActivity.getActivity().isReplayClicked == false && BouncingBallActivity.getActivity().level == 1){
+    			 try {
+    					_thread.sleep(2000);
+    				} catch (InterruptedException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				} 
+    		 }
+    		 
     		 _thread.setRunning(true);
              _thread.start();
     	}
@@ -59,9 +69,7 @@ import android.widget.Toast;
         public void onDraw(Canvas canvas) {
     		
     		if(!(canvas == null)){
-    			
-    			
-    			
+    		
     			canvas.drawColor(Color.BLACK);	
     			
 	    		//... Slider Left To Right
@@ -119,16 +127,7 @@ import android.widget.Toast;
 	    			
 	    			Log.d("Number_of_Hit", Integer.toString(BouncingBallActivity.number_of_hit_per_level));
 	    			if(BouncingBallActivity.number_of_hit_per_level == BouncingBallActivity.MAX_NUMBER_OF_HIT && BouncingBallActivity.level < BouncingBallActivity.MAX_LEVEL){
-	    				/*BouncingBallActivity.getActivity().callBackHandler.post(new Runnable(){
-    						@Override
-    						public void run() {
-    							// TODO Auto-generated method stub
-    							//Toast.makeText(BouncingBallActivity.getActivity().getApplicationContext(), "Congratulations!!!You have won the game...", Toast.LENGTH_LONG).show();
-    							BouncingBallActivity.getActivity().increaseLevel();
-    							//return;
-    						}
-    	    				
-    	    			});*/
+	    				
 	    				BouncingBallActivity.getActivity().increaseLevel();
 	    			}
 	    				
@@ -170,8 +169,6 @@ import android.widget.Toast;
 						}
 	    				
 	    			});
-	    			//BouncingBallActivity.ball = null;
-	    			//BouncingBallActivity.slider = null;
 	    			
 	    			return;
 	    		} 		
