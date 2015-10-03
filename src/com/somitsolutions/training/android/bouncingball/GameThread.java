@@ -31,15 +31,21 @@ import android.view.SurfaceHolder;
                 try {
                     c = _surfaceHolder.lockCanvas(null);
                     synchronized (_surfaceHolder) {
+                        //we will have to wait to start the animation of the ball and the slider
+                        //until the surface is fully created...
+                        BouncingBallActivity.getActivity().waitTillTheWholeSurfaceIsCreated.await();
                         _panel.onDraw(c);
                         Thread.sleep(50);
                     }
                 }
                  catch(InterruptedException e){
-                        	
+
                  }
                      
                 finally {
+                   /* if (c != null) {
+                        _surfaceHolder.unlockCanvasAndPost(c);
+                    }*/
                 }
                     // do this in a finally so that if an exception is thrown
                     // during the above, we don't leave the Surface in an

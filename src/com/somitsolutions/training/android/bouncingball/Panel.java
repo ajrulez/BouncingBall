@@ -4,15 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
 
-    
-    @SuppressLint("DrawAllocation")
+
+@SuppressLint("DrawAllocation")
 	public class Panel extends SurfaceView implements SurfaceHolder.Callback{
  
     	public GameThread _thread;
@@ -45,15 +44,6 @@ import android.widget.Toast;
 		public void surfaceCreated(SurfaceHolder holder) {
     		// TODO Auto-generated method stub
     		 _thread = new GameThread(getHolder(), this);
-    		 if(BouncingBallActivity.getActivity().isReplayClicked == false && BouncingBallActivity.getActivity().level == 1){
-    			 try {
-    					_thread.sleep(2000);
-    				} catch (InterruptedException e) {
-    					// TODO Auto-generated catch block
-    					e.printStackTrace();
-    				} 
-    		 }
-    		 
     		 _thread.setRunning(true);
              _thread.start();
     	}
@@ -134,16 +124,21 @@ import android.widget.Toast;
 	    				if(BouncingBallActivity.level == BouncingBallActivity.MAX_LEVEL && BouncingBallActivity.number_of_hit_per_level == BouncingBallActivity.MAX_NUMBER_OF_HIT){
 	    					//posting a toast message to the UI
 	    					_thread.setRunning(false);
-	    	    			BouncingBallActivity.getActivity().callBackHandler.post(new Runnable(){
-	    						@Override
-	    						public void run() {
-	    							// TODO Auto-generated method stub
-	    							Toast.makeText(BouncingBallActivity.getActivity().getApplicationContext(), "Congratulations!!!You have won the game. Total points earned = " + Integer.toString(BouncingBallActivity.total_number_of_hit *10), Toast.LENGTH_LONG).show();
-	    						}
-	    	    				
-	    	    			});
+	    	    			BouncingBallActivity.getActivity().callBackHandler.post(new Runnable() {
+								@Override
+								public void run() {
+									// TODO Auto-generated method stub
+									Toast.makeText(BouncingBallActivity.getActivity().getApplicationContext(), "Congratulations!!!You have won the game. Total points earned = " + Integer.toString(BouncingBallActivity.total_number_of_hit * 10), Toast.LENGTH_LONG).show();
+								}
+
+							});
 	    	    			BouncingBallActivity.number_of_hit_per_level = 0;
 	    	    			BouncingBallActivity.level = 1;
+							/*if(BouncingBallActivity.getActivity().waitTillTheWholeSurfaceIsCreated != null){
+								BouncingBallActivity.getActivity().waitTillTheWholeSurfaceIsCreated = null;
+								BouncingBallActivity.getActivity().waitTillTheWholeSurfaceIsCreated = new CountDownLatch(1);
+							}*/
+
 	    				}
 	    			return;
 	    		}
@@ -169,7 +164,12 @@ import android.widget.Toast;
 						}
 	    				
 	    			});
-	    			
+
+					/*if(BouncingBallActivity.getActivity().waitTillTheWholeSurfaceIsCreated != null){
+						BouncingBallActivity.getActivity().waitTillTheWholeSurfaceIsCreated = null;
+						BouncingBallActivity.getActivity().waitTillTheWholeSurfaceIsCreated = new CountDownLatch(1);
+					}*/
+
 	    			return;
 	    		} 		
 	    }

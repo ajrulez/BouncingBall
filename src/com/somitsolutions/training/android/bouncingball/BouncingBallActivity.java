@@ -9,12 +9,13 @@ import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.View.OnClickListener;
+import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
+
+import java.util.concurrent.CountDownLatch;
 
 public class BouncingBallActivity extends Activity implements OnClickListener{
 	private static BouncingBallActivity bouncingBallActivity;
@@ -44,6 +45,8 @@ public class BouncingBallActivity extends Activity implements OnClickListener{
 	Handler callBackHandler;
 	
 	RelativeLayout rootLayout;
+
+	static CountDownLatch waitTillTheWholeSurfaceIsCreated = new CountDownLatch(1);
 	
 	/** Called when the activity is first created. */
     @Override
@@ -60,15 +63,13 @@ public class BouncingBallActivity extends Activity implements OnClickListener{
 			
 			@Override
 			public void onGlobalLayout() {
-				//p._thread.setRunning(false);
+
 				surfaceHeight = p.getHeight();
 		        bottom_Of_Surface = surfaceHeight;
 		        //We will have to delay the creation of the Ball & the Slider
 		        //till the surface is completely loaded and displayed.
 		        CreateSliderAndBall();
-		       
-		       
-		        
+				waitTillTheWholeSurfaceIsCreated.countDown();
 			}
 		});
         
@@ -165,7 +166,7 @@ public class BouncingBallActivity extends Activity implements OnClickListener{
 	}
 	
 	private void Replay(){
-		
+
 		p._thread.setRunning(false);
 		if(ball != null){
 			ball = null;
